@@ -1,0 +1,29 @@
+From ee544c2b11ab327abab6e205425e6eafe961de2e Mon Sep 17 00:00:00 2001
+From: Ben Skeggs <bskeggs@redhat.com>
+Date: Fri, 28 Aug 2009 09:43:16 +1000
+Subject: [PATCH] nv: refuse to load if there's a kernel driver bound to the device already
+
+---
+ src/nv_driver.c |    6 ++++++
+ 1 files changed, 6 insertions(+), 0 deletions(-)
+
+diff --git a/src/nv_driver.c b/src/nv_driver.c
+index a7cf2dc..6f7fc0e 100644
+--- a/src/nv_driver.c
++++ b/src/nv_driver.c
+@@ -780,6 +780,12 @@ NVPciProbe(DriverPtr drv, int entity, struct pci_device *dev, intptr_t data)
+                       NVGetPCIXpressChip(dev) : dev->vendor_id << 16 | dev->device_id;
+     const char *name = xf86TokenToString(NVKnownChipsets, id);
+ 
++    if (pci_device_has_kernel_driver(dev)) {
++	ErrorF("The PCI device has a kernel module claiming it.\n");
++	ErrorF("This driver cannot operate until it has been unloaded\n");
++	return FALSE;
++    }
++
+     if(dev->vendor_id == PCI_VENDOR_NVIDIA && !name &&
+        !NVIsSupported(id) && !NVIsG80(id)) {
+         /* See if pci.ids knows what the heck this thing is */
+-- 
+1.6.4
+

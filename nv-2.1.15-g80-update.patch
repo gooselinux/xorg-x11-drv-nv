@@ -1,0 +1,15 @@
+diff -up xf86-video-nv-2.1.15/src/nv_driver.c.jx xf86-video-nv-2.1.15/src/nv_driver.c
+--- xf86-video-nv-2.1.15/src/nv_driver.c.jx	2009-11-12 10:11:11.000000000 -0500
++++ xf86-video-nv-2.1.15/src/nv_driver.c	2009-11-12 10:11:56.000000000 -0500
+@@ -733,8 +733,11 @@ NVIsG80(int chipType)
+         case 0x06e0:
+         case 0x06f0:
+         case 0x0a60:
++	case 0x0a20:
++	case 0x0a30:
+         case 0x0a70:
+         case 0x0ca0:
++	case 0x0cb0:
+             return TRUE;
+     }
+ 

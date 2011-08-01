@@ -1,0 +1,60 @@
+diff -up xf86-video-nv-2.1.14/src/nv_driver.c.nv6x xf86-video-nv-2.1.14/src/nv_driver.c
+--- xf86-video-nv-2.1.14/src/nv_driver.c.nv6x	2009-07-07 13:53:15.000000000 -0400
++++ xf86-video-nv-2.1.14/src/nv_driver.c	2009-07-07 13:54:57.000000000 -0400
+@@ -381,6 +381,9 @@ static SymTabRec NVKnownChipsets[] =
+   { 0x10DE03D2, "GeForce 6100 nForce 400" },
+   { 0x10DE03D5, "GeForce 6100 nForce 420" },
+ 
++  { 0x10DE053E, "GeForce 7025" },
++  { 0x10DE053B, "GeForce 7050" },
++
+ /*************** G8x ***************/
+   { 0x10DE0191, "GeForce 8800 GTX" },
+   { 0x10DE0193, "GeForce 8800 GTS" },
+@@ -766,6 +769,7 @@ NVIsSupported(CARD32 id)
+     case 0x0340:
+     case 0x0390:
+     case 0x03D0:
++    case 0x0530:
+         return TRUE;
+     }
+ 
+@@ -1693,6 +1697,7 @@ NVPreInit(ScrnInfoPtr pScrn, int flags)
+     case 0x0290:   /* GeForce 7900 */
+     case 0x0390:   /* GeForce 7600 */
+     case 0x0240:   /* GeForce 6100 */
++    case 0x0530:   /* GeForce 7050, 7025 */
+     case 0x03D0:
+          pNv->Architecture =  NV_ARCH_40;
+          break;
+diff -up xf86-video-nv-2.1.14/src/nv_hw.c.nv6x xf86-video-nv-2.1.14/src/nv_hw.c
+--- xf86-video-nv-2.1.14/src/nv_hw.c.nv6x	2009-05-06 22:14:11.000000000 -0400
++++ xf86-video-nv-2.1.14/src/nv_hw.c	2009-07-07 13:53:15.000000000 -0400
+@@ -890,7 +890,8 @@ void NVCalcStateExt (
+         case NV_ARCH_30:
+         default:
+             if(((pNv->Chipset & 0xfff0) == 0x0240) ||
+-               ((pNv->Chipset & 0xfff0) == 0x03D0))
++               ((pNv->Chipset & 0xfff0) == 0x03D0) ||
++               ((pNv->Chipset & 0xfff0) == 0x0530))
+             {
+                 state->arbitration0 = 128; 
+                 state->arbitration1 = 0x0480; 
+@@ -1226,6 +1227,7 @@ void NVLoadStateExt (
+               case 0x01D0:
+               case 0x0240:
+               case 0x03D0:
++              case 0x0530:
+                  pNv->PMC[0x1700/4] = pNv->PFB[0x020C/4];
+                  pNv->PMC[0x1704/4] = 0;
+                  pNv->PMC[0x1708/4] = 0;
+@@ -1316,7 +1318,8 @@ void NVLoadStateExt (
+                    pNv->PGRAPH[(0x0900/4) + i] = pNv->PFB[(0x0600/4) + i];
+                    if(((pNv->Chipset & 0xfff0) != 0x0160) &&
+                       ((pNv->Chipset & 0xfff0) != 0x0220) &&
+-                      ((pNv->Chipset & 0xfff0) != 0x0240))
++                      ((pNv->Chipset & 0xfff0) != 0x0240) &&
++                      ((pNv->Chipset & 0xfff0) != 0x0530))
+                    {
+                       pNv->PGRAPH[(0x6900/4) + i] = pNv->PFB[(0x0600/4) + i];
+                    }
